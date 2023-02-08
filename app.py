@@ -6,7 +6,7 @@ import time
 import mysql.connector
 from mysql.connector import errorcode
 
-db_connection = mysql.connector.connect(host='localhost', database='devnology', user='root', password='')
+db_connection = mysql.connector.connect(host='devnology11.mysql.dbaas.com.br', database='devnology11', user='devnology11', password='Grodrigues89@')
 cursor = db_connection.cursor()
 
 
