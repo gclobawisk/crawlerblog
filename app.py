@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import time
 import mysql.connector
 from mysql.connector import errorcode
@@ -47,6 +47,30 @@ def obterdados():
         break
 
     return render_template('index.html')
+
+
+@app.route('/api')
+def api():
+    db_connection = mysql.connector.connect(host='devnology11.mysql.dbaas.com.br', database='devnology11',
+                                            user='devnology11', password='Grodrigues89@')
+    cursor = db_connection.cursor()
+
+    cursor.execute("SELECT * FROM links")
+    myresult = cursor.fetchall()
+
+    return render_template('api.html', myresult=myresult)
+
+@app.route('/delete/<id>')
+def delete(id):
+
+    return redirect("http://127.0.0.1:5000/api")
+
+@app.route('/update/<id>')
+def update(id):
+
+    return redirect("http://127.0.0.1:5000/api")
+
+
 
 
 if __name__ == '__main__':
