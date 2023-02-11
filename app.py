@@ -21,6 +21,10 @@ app.config['JSON_AS_ASCII'] = False
 def index():
     return render_template('index.html')
 
+@app.route('/api')
+def api():
+    return render_template('api.html')
+
 # CRAWLER
 @app.route('/crawler')
 def crawler():
@@ -63,7 +67,6 @@ def crawler():
 @app.route('/links')
 def getLinks():
     return jsonify(links)
-
 
 # Consultar link por id'
 @app.route('/links/<int:id>', methods=['GET'])
