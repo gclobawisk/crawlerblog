@@ -32,7 +32,7 @@ def crawler():
                                             user='devnology99', password='Devnology99@')
     cursor = db_connection.cursor()
 
-    navegador = webdriver.Chrome()
+    navegador = webdriver.Firefox()
     navegador.get("https://devgo.com.br")
     blog_id = 1
     while True:
@@ -62,6 +62,35 @@ def crawler():
         break
 
     return render_template('sucesso.html')
+
+@app.route('/scrapping')
+def scrapping():
+    import bs4 as bs
+    import urllib.request
+    import re
+
+    def stringReplace(url_img):
+        split_text = url_img.split("background-image:url(")
+        if len(split_text) > 1:
+            rest = split_text[1].replace(")", "").replace('"', "")
+        else:
+            rest = ""
+
+        return (rest)
+
+    source = urllib.request.urlopen('https://devgo.com.br').read()
+    soup = bs.BeautifulSoup(source, 'lxml')
+    all_div = soup.findAll("div", attrs={"class": "blog-article-card css-g70b67"})
+
+    for div in all_div:
+        url_img = div.a.span.img['style']
+        url_img = stringReplace(url_img)
+
+        print(f"H1 = {div.h1.a.text} \n"
+              f"LINK = {div.h1.a['href']}\n"
+              f"LINK IMG = {url_img}")
+        print()
+    return ""
 
 # Consultar todos os links
 @app.route('/links')
