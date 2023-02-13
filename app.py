@@ -1,18 +1,12 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import WebDriverException
 from flask import Flask, request, render_template, redirect, jsonify
-import time
 import mysql.connector
 from mysql.connector import errorcode
 
-# CONEXAO AO BANCO DE DADOS
 db_connection = mysql.connector.connect(host='devnology99.mysql.dbaas.com.br', database='devnology99',
                                             user='devnology99', password='Devnology99@')
 cursor = db_connection.cursor(dictionary=True)
 cursor.execute("SELECT * FROM links")
 links = cursor.fetchall()
-
 
 # CRIANDO O APP
 app = Flask(__name__)
@@ -25,72 +19,42 @@ def index():
 def api():
     return render_template('api.html')
 
-# CRAWLER
 @app.route('/crawler')
 def crawler():
-    db_connection = mysql.connector.connect(host='devnology99.mysql.dbaas.com.br', database='devnology99',
-                                            user='devnology99', password='Devnology99@')
-    cursor = db_connection.cursor()
-
-    navegador = webdriver.Firefox()
-    navegador.get("https://devgo.com.br")
-    blog_id = 1
-    while True:
-        try:
-            # Click no botão ler mais
-            lermais = navegador.find_element(By.XPATH,
-                                             '//*[@id="__next"]/div/div[3]/div/div[10]/button').click()
-            time.sleep(3)
-
-            links = navegador.find_elements(By.CLASS_NAME,
-                                            'blog-article-card-title [href]')  # para obter o href do seletor <a> que fica a baixo
-
-        except WebDriverException as erro:
-            pass
-            # print("Erro - exceção Webdriverexception: ", erro)
-
-        for i in links:
-            li_titulo = i.text
-            li_url = i.get_property('href')
-
-
-            sql = f"INSERT IGNORE INTO links (li_titulo, li_url, li_blog_id) VALUES ('{li_titulo}', '{li_url}', {1})"
-            cursor.execute(sql)
-            db_connection.commit()
-            #print(i.text)
-            #print(i.get_property('href'))
-        break
-
-    return render_template('sucesso.html')
-
-@app.route('/scrapping')
-def scrapping():
     import bs4 as bs
     import urllib.request
+    from urllib.error import HTTPError
     import re
 
-    def stringReplace(url_img):
-        split_text = url_img.split("background-image:url(")
-        if len(split_text) > 1:
-            rest = split_text[1].replace(")", "").replace('"', "")
-        else:
-            rest = ""
+    db_connection = mysql.connector.connect(host='devnology99.mysql.dbaas.com.br', database='devnology99',
+                                            user='devnology99', password='Devnology99@')
+    cursor = db_connection.cursor(dictionary=True)
 
-        return (rest)
+    fim = False
+    i = 1
+    # Condição de parada caso não haja mais páginas para rastrear
+    while fim == False:
+        try:
+            source = urllib.request.urlopen(f"https://devgo.com.br/archive/{i}").read()
+            soup = bs.BeautifulSoup(source, 'lxml')
+            all_div = soup.findAll("div", attrs={"class": "css-1mp7n32"})
 
-    source = urllib.request.urlopen('https://devgo.com.br').read()
-    soup = bs.BeautifulSoup(source, 'lxml')
-    all_div = soup.findAll("div", attrs={"class": "blog-article-card css-g70b67"})
+            for div in all_div:
+                li_titulo = div.h1.a.text
+                li_url = div.h1.a['href']
 
-    for div in all_div:
-        url_img = div.a.span.img['style']
-        url_img = stringReplace(url_img)
+                # INSERE OS DADOS NO BANCO DE DADOS
+                sql = f"INSERT IGNORE INTO links (li_titulo, li_url, li_blog_id) VALUES ('{li_titulo}', '{li_url}', {1})"
+                cursor.execute(sql)
+                db_connection.commit()
 
-        print(f"H1 = {div.h1.a.text} \n"
-              f"LINK = {div.h1.a['href']}\n"
-              f"LINK IMG = {url_img}")
-        print()
-    return ""
+            i = i + 1
+
+        #caso não haja url o erro é tratado e o loop é encerrado
+        except HTTPError as e:
+            fim = True
+            return render_template('sucesso.html')
+
 
 # Consultar todos os links
 @app.route('/links')
@@ -137,5 +101,6 @@ def excluir_link(id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5000, host='0.0.0.0', debug=True,
+            threaded=True)
 

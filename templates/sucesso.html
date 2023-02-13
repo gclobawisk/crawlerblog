@@ -15,24 +15,29 @@
   <div class="collapse navbar-collapse d-flex justify-content-center" id="navbarNav" >
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="https://crawler-app.onrender.com/">Home <span class="sr-only"></span></a>
+        <a class="nav-link" href="http://44.205.3.29:5000">Home <span class="sr-only"></span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="javascript: if(confirm('Deseja Realizar o Crawler dos Links?')) location.href='https://crawler-app.onrender.com/crawler'">Crawler</a>
+        <a class="nav-link" href="javascript: if(confirm('Deseja Realizar o Crawler dos Links?')) location.href='http://44.205.3.29:5000/crawler'">Crawler</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://crawler-app.onrender.com/links">Links</a>
+        <a class="nav-link" href="http://44.205.3.29:5000/links">Links</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://crawler-app.onrender.com/api">Consumir API</a>
+        <a class="nav-link" href="http://44.205.3.29:5000/api">Consumir API</a>
       </li>
     </ul>
   </div>
 </nav>
 
 <div class="container">
-    <h1 class="text-center"> LINKS CADASTRADOS COM SUCESSO! </h1>
+    <h1 class="text-center"> LINKS SALVOS COM SUCESSO! </h1>
 
+        <tr>
+        {% for div in all_div %}
+            <td>{{div.h1.a['href']}}</td><br>
+        {% endfor %}
+        </tr>
 
     </div>
 </div>
