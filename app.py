@@ -36,7 +36,7 @@ def crawler():
     while fim == False:
         try:
             source = urllib.request.urlopen(f"https://devgo.com.br/archive/{i}").read()
-            soup = bs.BeautifulSoup(source, 'lxml')
+            soup = bs.BeautifulSoup(source)
             all_div = soup.findAll("div", attrs={"class": "css-1mp7n32"})
 
             for div in all_div:
