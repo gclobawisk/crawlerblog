@@ -1,6 +1,8 @@
 from flask import Flask, request, render_template, redirect, jsonify
 import mysql.connector
 from mysql.connector import errorcode
+from flask_cors import CORS #include this line
+import json
 
 db_connection = mysql.connector.connect(host='devnology99.mysql.dbaas.com.br', database='devnology99',
                                             user='devnology99', password='Devnology99@')
@@ -10,6 +12,7 @@ links = cursor.fetchall()
 
 # CRIANDO O APP
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"crossOrigin": "*"}})
 app.config['JSON_AS_ASCII'] = False
 @app.route('/')
 def index():
