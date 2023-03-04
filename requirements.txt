@@ -9,4 +9,4 @@ Werkzeug==2.2.2
 wincertstore==0.2
 beautifulsoup4==4.11.2
 mysql-connector-python==8.0.32
-cors==1.0.1
+Flask-Cors==3.0.10
